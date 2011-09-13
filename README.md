@@ -1,0 +1,1 @@
+Examples from my talk at GoGaRuCo 2011
