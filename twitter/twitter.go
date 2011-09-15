@@ -36,28 +36,26 @@ func NewStream(username, password string)(*Stream, os.Error) {
 	return s, nil
 }
 
+type rawUser struct {
+	Id int64 "id"
+	ScreenName string `json:"screen_name"`
+	Name string "name"
+}
+
+type rawTweet struct {
+	Text string "text"
+	User rawUser "user"
+}
+
 func (s *Stream) process() {
 	// loop until body is closed
 	decoder := json.NewDecoder(s.body)
-	var nextUpdate map[string]interface{}
+	// var nextUpdate map[string]interface{}
+	var nextUpdate rawTweet
 	var err os.Error
 	for {
 		if err = decoder.Decode(&nextUpdate); err == nil {
-			var text string
-			if textI, ok := nextUpdate["text"]; ok {
-				text = textI.(string)
-			}
-			
-			var username string
-			if userI, ok := nextUpdate["user"]; ok {
-				if user, ok := userI.(map[string]interface{}); ok {
-					if usernameI, ok := user["screen_name"]; ok {
-						username = usernameI.(string)
-					}
-				}
-			}
-			
-			s.C <- Update{Text: text, Username: username}
+			s.C <- Update{Text: nextUpdate.Text, Username: nextUpdate.User.ScreenName}
 		} else {
 			// some error happened. make sure the body is closed
 			s.body.Close()

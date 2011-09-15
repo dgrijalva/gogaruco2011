@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"json"
 	"io/ioutil"
+	"strings"
 
 	// Don't do this.  Ugly shortcut for presentation.
 	"../twitter/_go_"
@@ -30,7 +31,7 @@ func main() {
 	if t, err := twitter.NewStream(auth.Username, auth.Password); err == nil {
 		for {
 			if u, ok := <-t.C; ok {
-				fmt.Printf("%v: %v\n", u.Username, u.Text)
+				fmt.Printf("%v: %v\n", u.Username, strings.Replace(u.Text, "\n", "", -1))
 			} else {
 				return
 			}
