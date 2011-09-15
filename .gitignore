@@ -1,5 +1,7 @@
 6.out
 *.6
 _test*
+_obj
 hello_world/hello
 twitter/account.json
+tcat/tcat
