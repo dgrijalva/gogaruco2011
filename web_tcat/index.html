@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	<title>Pipes Debug Console</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js" type="text/javascript" charset="utf-8"></script>
+	<link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap-1.2.0.min.css">
+	<style type="text/css" media="screen">
+		.topbar h3 {color: white; padding-left: 1em}
+		#events {margin-top: 60px}
+	   .event {
+	       margin: 10px; padding: 10px;
+	       background-color: #EEE;
+	       font-family: Inconsolata, Courier;
+	       font-size: 14px;
+	   }
+	   .event img {
+			width: 48px; height: 48px;
+			float: left;
+			padding-right: 1em;
+		}
+	</style>
+	
+</head>
+
+<body>
+	<div class="topbar-wrapper">
+		<div class="topbar">
+			<div class="topbar-inner">
+				<h3>tcat</h3>
+			</div>
+		</div>
+	</div>
+
+    <div id="events"></div>
+    
+    <script type="text/javascript" charset="utf-8">
+        var eventWebSocket = new WebSocket("ws://" + location.host + '/events')
+        var loadingDiv = $('instructions')
+        var eventDiv = $('events')
+        
+        eventWebSocket.onopen = function(evt) {
+           console.log("Connection open.");
+        };
+        eventWebSocket.onmessage = function(evt) {
+            if(evt.data == "") return;
+                
+			var event = JSON.parse(evt.data)
+			if(event != null) {
+
+				var div = document.createElement('div')
+				div.addClassName('event')
+
+				var img = document.createElement("img")
+				img.src = event.ImageURL
+				div.appendChild(img)
+
+				var user = document.createElement("h3")
+				user.update(event.Username)
+				div.appendChild(user)
+
+				var text = document.createElement("div")
+				text.update(event.Text)
+				div.appendChild(text)
+
+				insertEvent(div)
+			}
+                
+        };
+        eventWebSocket.onclose = function(evt) {
+           console.log("Connection closed.");
+        };
+        
+		function insertEvent(event) {
+			if(eventDiv.hasChildNodes()){
+			    eventDiv.insertBefore(event, eventDiv.firstChild)
+			}
+			else {
+			    eventDiv.appendChild(event)
+			}
+
+			while(eventDiv.childNodes.length > 100) {
+			    eventDiv.removeChild(eventDiv.lastChild)
+			}
+		}
+
+    </script>
+</body>
+</html>
