@@ -30,7 +30,7 @@ func main() {
 	// print stream
 	if t, err := twitter.NewStream(auth.Username, auth.Password); err == nil {
 		for {
-			if u, ok := <-t.C; ok {
+			if u, ok := <-t.C(); ok {
 				fmt.Printf("%v: %v\n", u.Username, strings.Replace(u.Text, "\n", "", -1))
 			} else {
 				return
