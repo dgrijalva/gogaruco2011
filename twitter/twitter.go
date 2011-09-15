@@ -10,6 +10,7 @@ import (
 type Update struct {
 	Username string
 	Text     string
+	ImageURL string
 }
 
 type Stream struct {
@@ -42,6 +43,7 @@ type rawTweet struct {
 		Id int64 "id"
 		ScreenName string `json:"screen_name"`
 		Name string "name"
+		ImageURL string `json:"profile_image_url"`
 	} "user"
 }
 
@@ -53,7 +55,7 @@ func (s *Stream) process() {
 	var err os.Error
 	for {
 		if err = decoder.Decode(&nextUpdate); err == nil {
-			s.C <- Update{Text: nextUpdate.Text, Username: nextUpdate.User.ScreenName}
+			s.C <- Update{Text: nextUpdate.Text, Username: nextUpdate.User.ScreenName, ImageURL: nextUpdate.User.ImageURL}
 		} else {
 			// some error happened. make sure the body is closed
 			s.body.Close()
