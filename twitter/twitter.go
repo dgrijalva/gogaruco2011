@@ -36,15 +36,13 @@ func NewStream(username, password string)(*Stream, os.Error) {
 	return s, nil
 }
 
-type rawUser struct {
-	Id int64 "id"
-	ScreenName string `json:"screen_name"`
-	Name string "name"
-}
-
 type rawTweet struct {
 	Text string "text"
-	User rawUser "user"
+	User struct{
+		Id int64 "id"
+		ScreenName string `json:"screen_name"`
+		Name string "name"
+	} "user"
 }
 
 func (s *Stream) process() {
