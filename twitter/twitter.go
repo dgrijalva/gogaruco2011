@@ -8,18 +8,24 @@ import (
 )
 
 type Update struct {
+	Id       uint64
 	Username string
 	Text     string
 	ImageURL string
 }
 
-type Stream struct {
-	C chan Update
+type Stream interface {
+	C()(<-chan Update)
+	Close()
+}
+
+type RawStream struct {
+	Updates chan Update
 	body io.ReadCloser
 }
 
-func NewStream(username, password string)(*Stream, os.Error) {
-	var s = &Stream{C: make(chan Update)}
+func NewStream(username, password string)(*RawStream, os.Error) {
+	var s = &RawStream{Updates: make(chan Update, 100)}
 	client := new(http.Client)
 	req, _ := http.NewRequest("GET", "https://stream.twitter.com/1/statuses/sample.json", nil)
 	req.SetBasicAuth(username, password)
@@ -38,6 +44,7 @@ func NewStream(username, password string)(*Stream, os.Error) {
 }
 
 type rawTweet struct {
+	Id uint64 "id"
 	Text string "text"
 	User struct{
 		Id int64 "id"
@@ -47,7 +54,7 @@ type rawTweet struct {
 	} "user"
 }
 
-func (s *Stream) process() {
+func (s *RawStream) process() {
 	// loop until body is closed
 	decoder := json.NewDecoder(s.body)
 	// var nextUpdate map[string]interface{}
@@ -55,17 +62,26 @@ func (s *Stream) process() {
 	var err os.Error
 	for {
 		if err = decoder.Decode(&nextUpdate); err == nil {
-			s.C <- Update{Text: nextUpdate.Text, Username: nextUpdate.User.ScreenName, ImageURL: nextUpdate.User.ImageURL}
+			s.Updates <- Update{
+				Id: nextUpdate.Id, 
+				Text: nextUpdate.Text, 
+				Username: nextUpdate.User.ScreenName, 
+				ImageURL: nextUpdate.User.ImageURL,
+			}
 		} else {
 			// some error happened. make sure the body is closed
 			s.body.Close()
 			// close the output chan so anything waiting on the next entry will return
-			close(s.C)
+			close(s.Updates)
 			return
 		}
 	}
 }
 
-func (s *Stream) Close() {
+func (s *RawStream) C()(<-chan Update) {
+	return s.Updates
+}
+
+func (s *RawStream) Close() {
 	s.body.Close()
 }

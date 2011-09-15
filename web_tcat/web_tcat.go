@@ -70,9 +70,10 @@ func RootServer(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func process(t *twitter.Stream) {
+func process(t twitter.Stream) {
+	// t = twitter.NewDeduper(t)
 	for {
-		if u, ok := <-t.C; ok {
+		if u, ok := <-t.C(); ok {
 			go notify(u)
 		} else {
 			return
