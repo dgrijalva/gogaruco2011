@@ -8,6 +8,11 @@ import (
 	"time"
 )
 
+// To get a sample data set:
+// curl https://stream.twitter.com/1/statuses/sample.json -uUser:Pass > sample_data.json
+// Make sure you don't have a half-complete event at the end of your file or
+// it won't loop correctly.
+
 var http_port = flag.Int("port", 8001, "Port to listen on")
 var rate = flag.Int64("rate", 30, "entries per second")
 
