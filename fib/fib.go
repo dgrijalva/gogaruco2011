@@ -26,6 +26,7 @@ func produce(c chan int, until int) {
 	c <- 0
 	// c <- 1
 	for a, b = 0, 1; b < until; a, b = b, a+b {
+		fmt.Println("Producer has produced", b)
 		c <- b
 	}
 	close(c)
