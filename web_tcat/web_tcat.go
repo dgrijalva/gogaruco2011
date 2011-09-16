@@ -93,6 +93,7 @@ func notify(data twitter.Update) {
 func SocketServer(ws *websocket.Conn) {
 	c := make(chan []byte, 100)
 	e := ws_channels.PushBack(c)
+	fmt.Printf("New connection:    %v total\n", ws_channels.Len())
 	var data []byte
 	for {
 		select {
@@ -102,11 +103,11 @@ func SocketServer(ws *websocket.Conn) {
 		}
 
 		if _, err := ws.Write(data); err != nil {
-			fmt.Println("Closing")
+			// fmt.Println("Closing")
 			ws.Close()
 			break
 		}
 	}
 	ws_channels.Remove(e)
-	fmt.Println("Done")
+	fmt.Printf("Closed connection: %v total\n", ws_channels.Len())
 }
