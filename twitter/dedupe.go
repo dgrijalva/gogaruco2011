@@ -7,13 +7,13 @@ import (
 // Copy updates from S to C, dropping duplicates
 type Deduper struct {
 	Updates chan Update
-	S Stream
-	recent *list.List
+	S       Stream
+	recent  *list.List
 	// How many updates to keep track of for duplicates (default 100)
 	Track int
 }
 
-func NewDeduper(s Stream)(*Deduper) {
+func NewDeduper(s Stream) *Deduper {
 	d := &Deduper{Updates: make(chan Update, 100), S: s, recent: list.New(), Track: 100}
 	go d.process()
 	return d
@@ -34,7 +34,7 @@ func (d *Deduper) process() {
 				}
 			}
 			if !seen {
-				d.Updates <-u
+				d.Updates <- u
 				d.recent.PushBack(u.Id)
 				for d.recent.Len() > d.Track {
 					d.recent.Remove(d.recent.Front())
@@ -48,7 +48,7 @@ func (d *Deduper) process() {
 	}
 }
 
-func (d *Deduper) C()(<-chan Update) {
+func (d *Deduper) C() <-chan Update {
 	return d.Updates
 }
 

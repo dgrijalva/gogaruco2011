@@ -17,15 +17,15 @@ var http_port = flag.Int("port", 8001, "Port to listen on")
 var rate = flag.Int64("rate", 30, "entries per second")
 
 func main() {
-		flag.Parse()
-	
-		// Start server
-		http.HandleFunc("/", TweetServer)
-		err := http.ListenAndServe(fmt.Sprintf(":%v", *http_port), nil)
-		if err != nil {
-			fmt.Println("ListenAndServe: ", err.String())
-		}
-	
+	flag.Parse()
+
+	// Start server
+	http.HandleFunc("/", TweetServer)
+	err := http.ListenAndServe(fmt.Sprintf(":%v", *http_port), nil)
+	if err != nil {
+		fmt.Println("ListenAndServe: ", err.String())
+	}
+
 }
 
 func TweetServer(w http.ResponseWriter, req *http.Request) {

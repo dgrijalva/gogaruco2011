@@ -15,19 +15,19 @@ type Update struct {
 }
 
 type Stream interface {
-	C()(<-chan Update)
+	C() <-chan Update
 	Close()
 }
 
 type RawStream struct {
 	Updates chan Update
-	body io.ReadCloser
+	body    io.ReadCloser
 }
 
 var FEED_URL = "https://stream.twitter.com/1/statuses/sample.json"
 // var FEED_URL = "http://localhost:8001/"
 
-func NewStream(username, password string)(*RawStream, os.Error) {
+func NewStream(username, password string) (*RawStream, os.Error) {
 	var s = &RawStream{Updates: make(chan Update, 100)}
 	client := new(http.Client)
 	req, _ := http.NewRequest("GET", FEED_URL, nil)
@@ -42,18 +42,18 @@ func NewStream(username, password string)(*RawStream, os.Error) {
 	} else {
 		return nil, err
 	}
-	
+
 	return s, nil
 }
 
 type rawTweet struct {
-	Id uint64 "id"
+	Id   uint64 "id"
 	Text string "text"
-	User struct{
-		Id int64 "id"
+	User struct {
+		Id         int64  "id"
 		ScreenName string `json:"screen_name"`
-		Name string "name"
-		ImageURL string `json:"profile_image_url"`
+		Name       string "name"
+		ImageURL   string `json:"profile_image_url"`
 	} "user"
 }
 
@@ -66,9 +66,9 @@ func (s *RawStream) process() {
 	for {
 		if err = decoder.Decode(&nextUpdate); err == nil {
 			s.Updates <- Update{
-				Id: nextUpdate.Id, 
-				Text: nextUpdate.Text, 
-				Username: nextUpdate.User.ScreenName, 
+				Id:       nextUpdate.Id,
+				Text:     nextUpdate.Text,
+				Username: nextUpdate.User.ScreenName,
 				ImageURL: nextUpdate.User.ImageURL,
 			}
 		} else {
@@ -81,7 +81,7 @@ func (s *RawStream) process() {
 	}
 }
 
-func (s *RawStream) C()(<-chan Update) {
+func (s *RawStream) C() <-chan Update {
 	return s.Updates
 }
 

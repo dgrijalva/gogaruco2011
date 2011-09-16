@@ -22,7 +22,7 @@ func main() {
 }
 
 func produce(c chan int, until int) {
-	var a,b int
+	var a, b int
 	c <- 0
 	// c <- 1
 	for a, b = 0, 1; b < until; a, b = b, a+b {
@@ -38,7 +38,7 @@ func consume(c chan int, n int) {
 		if i, ok := <-c; ok {
 			fmt.Printf("Consumer %v consumed %v\n", n, i)
 		} else {
-			done <-1
+			done <- 1
 			return
 		}
 	}

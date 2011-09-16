@@ -21,12 +21,12 @@ func main() {
 	if confData, err := ioutil.ReadFile("../twitter/account.json"); err == nil {
 		if err := json.Unmarshal(confData, auth); err != nil {
 			fmt.Println("Error parsing config file:", err)
-		} 
+		}
 	} else {
 		fmt.Println("Error reading config file:", err)
 		return
 	}
-	
+
 	// print stream
 	if t, err := twitter.NewStream(auth.Username, auth.Password); err == nil {
 		for {
