@@ -4,5 +4,6 @@ _test*
 _obj
 hello_world/hello
 twitter/account.json
+tserve/tserve
 tcat/tcat
 web_tcat/web_tcat
