@@ -24,10 +24,13 @@ type RawStream struct {
 	body io.ReadCloser
 }
 
+// var FEED_URL = "https://stream.twitter.com/1/statuses/sample.json"
+var FEED_URL = "http://localhost:8001/"
+
 func NewStream(username, password string)(*RawStream, os.Error) {
 	var s = &RawStream{Updates: make(chan Update, 100)}
 	client := new(http.Client)
-	req, _ := http.NewRequest("GET", "https://stream.twitter.com/1/statuses/sample.json", nil)
+	req, _ := http.NewRequest("GET", FEED_URL, nil)
 	req.SetBasicAuth(username, password)
 	if res, err := client.Do(req); err == nil {
 		if res.StatusCode == 200 {

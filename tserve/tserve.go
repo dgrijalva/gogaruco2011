@@ -5,9 +5,11 @@ import (
 	"os"
 	"fmt"
 	"flag"
+	"time"
 )
 
 var http_port = flag.Int("port", 8001, "Port to listen on")
+var rate = flag.Int64("rate", 30, "entries per second")
 
 func main() {
 		flag.Parse()
@@ -28,7 +30,16 @@ func TweetServer(w http.ResponseWriter, req *http.Request) {
 		var bytes int
 		for err == nil {
 			bytes, err = file.Read(buf)
-			w.Write(buf[0:bytes])
+			if err == os.EOF {
+				// repeat the file forever
+				file.Seek(0, 0)
+				err = nil
+			}
+			_, err = w.Write(buf[0:bytes])
+			// send rate chunks per second.  this doesn't 
+			// map 1:1 with entries, but it doesn't matter
+			// for this demo
+			time.Sleep(1e9 / *rate)
 		}
 	} else {
 		w.WriteHeader(500)
