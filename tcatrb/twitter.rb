@@ -12,8 +12,8 @@ module Twitter
     end
     
     def process
-      # uri = URI.parse("http://#{@config['username']}:#{@config['password']}@stream.twitter.com/1/statuses/sample.json")
-      uri = URI.parse("http://localhost:8001/")
+      uri = URI.parse("http://#{@config['username']}:#{@config['password']}@stream.twitter.com/1/statuses/sample.json")
+      # uri = URI.parse("http://localhost:8001/")
       Yajl::HttpStream.get(uri, :symbolize_keys => true) do |hash|
         @chan << hash unless hash == nil || hash[:user] == nil
       end
